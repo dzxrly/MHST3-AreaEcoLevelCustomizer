@@ -1,12 +1,12 @@
 <div align="center">
 
-# MHWS ItemBox Editor
+# MHST3 AreaEcoLevelCustomizer
 
 </div>
 
 <div align="center">
 
-[![Static Badge](https://img.shields.io/badge/Nexusmods-Item%20Box%20Editor-%23d28934?style=for-the-badge)](https://www.nexusmods.com/monsterhunterwilds/mods/102) ![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdzxrly%2FMHST3-AreaEcoLevelCustomizer%2Fmain%2Fversion.json&query=%24.version&style=for-the-badge&label=VERSION) [![GitHub License](https://img.shields.io/github/license/dzxrly/MHST3-AreaEcoLevelCustomizer?style=for-the-badge)](https://github.com/dzxrly/MHST3-AreaEcoLevelCustomizer/blob/main/LICENSE)
+[![Static Badge](https://img.shields.io/badge/Nexusmods-Area%20Eco%20Level%20Customizer-%23d28934?style=for-the-badge)](https://www.nexusmods.com/#/mods/#) ![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdzxrly%2FMHST3-AreaEcoLevelCustomizer%2Fmain%2Fversion.json&query=%24.version&style=for-the-badge&label=VERSION) [![GitHub License](https://img.shields.io/github/license/dzxrly/MHST3-AreaEcoLevelCustomizer?style=for-the-badge)](https://github.com/dzxrly/MHST3-AreaEcoLevelCustomizer/blob/main/LICENSE)
 
 ![Dynamic YAML Badge](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdzxrly%2FMHST3-AreaEcoLevelCustomizer%2Frefs%2Fheads%2Fmain%2Fmod_info.yaml&query=%24.views_count&style=for-the-badge&label=Nexusmods%20views&color=F0E6EF) ![Dynamic YAML Badge](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdzxrly%2MHST3-AreaEcoLevelCustomizer%2Frefs%2Fheads%2Fmain%2Fmod_info.yaml&query=%24.total_download_count&style=for-the-badge&label=Nexusmods%20downloads&color=A8DADC) ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dzxrly/MHST3-AreaEcoLevelCustomizer/total?style=for-the-badge&label=Github%20Downloads&color=bce784)
 
