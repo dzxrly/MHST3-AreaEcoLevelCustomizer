@@ -43,7 +43,7 @@ A mod for `Monster Hunter Stories 3` that allows players to customize the eco le
 
 ## 前置：
 
-- [REFramework](https://github.com/praydog/REFramework/releases) （≥ Nightly 01207）
+- [REFramework](https://github.com/praydog/REFramework/releases) （≥ Nightly 01228）
 
 ## MOD下载:
 
