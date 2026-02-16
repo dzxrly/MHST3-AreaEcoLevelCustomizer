@@ -102,6 +102,33 @@ local function getCurrentTextLanguage()
     return 1
 end
 
+function M.initLanguage()
+    local existingLangOpts = {}
+    for key, _ in pairs(M.text) do
+        table.insert(existingLangOpts, key)
+    end
+
+    if state.cSaveDataHelperOption == nil then
+        state.languageIdx = 1
+        return
+    end
+
+    local inGameLang = tonumber(state.cSaveDataHelperOption:call("getCharacterLanguage()"))
+    local isLangSupported = false
+    for _, lang in ipairs(existingLangOpts) do
+        if lang == inGameLang then
+            isLangSupported = true
+            break
+        end
+    end
+
+    if not isLangSupported then
+        state.languageIdx = 1
+    else
+        state.languageIdx = inGameLang
+    end
+end
+
 function M.getUIText(key, ...)
     local lang = getCurrentTextLanguage()
     local langText = M.text[lang]

@@ -2,6 +2,7 @@ local coreApi = require("AreaEcoLevelCustomizer.utils")
 local state = require("AreaEcoLevelCustomizer.state")
 local dataHelper = require("AreaEcoLevelCustomizer.data_helper")
 local config = require("AreaEcoLevelCustomizer.config")
+local i18n = require("AreaEcoLevelCustomizer.i18n")
 
 local M = {}
 
@@ -80,8 +81,6 @@ local function otomonFixedIdEnumParser()
     state.otomonFixedIdEnum = validOtomonFixedIdEnum
 end
 
-
-
 function M.modInit()
     print("Initializing...")
     state.cUserSaveDataParam = sdk.get_managed_singleton("app.SaveDataManager"):call("get_UserSaveData()")
@@ -90,8 +89,8 @@ function M.modInit()
     state.cSaveDataHelperOption = getCSaveDataHelper():get_field("_Option")
     state.stateManager = sdk.get_managed_singleton("app.StageManager")
     state.stageAreaParamTableData = state.stateManager:call("get_AreaParamTableUserData()")
-    state.languageIdx = getCSaveDataHelper():get_field("_Option"):call("getCharacterLanguage()")
 
+    i18n.initLanguage()
     print("Language Index: " .. tostring(state.languageIdx))
 
     rankEnumParser()
