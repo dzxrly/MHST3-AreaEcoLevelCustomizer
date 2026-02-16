@@ -55,6 +55,7 @@ A mod for `Monster Hunter Stories 3` that allows players to customize the eco le
 2. 下载MOD；
 3. 将MOD解压缩（**所有文件**）后存放至Monster Hunter Stories 3**根目录**；
 4. 当你正确安装MOD后，在你的 `./reframework` 目录下应该有一个文件和一个文件夹：
+
     - `./reframework/autorun/AreaEcoLevelCustomizer.lua`
     - `./reframework/autorun/AreaEcoLevelCustomizer`
 
