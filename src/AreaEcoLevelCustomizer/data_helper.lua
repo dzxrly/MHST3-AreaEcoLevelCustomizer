@@ -28,17 +28,14 @@ local function getFixedIdKey(fixedId)
 end
 
 local function buildVaryComboLabel(info)
-    return "[" .. tostring(info.otomonFixedId) .. "] " .. info.otomonName ..
-        " - Lv." .. tostring(info.currentLv)
+    return "[" .. tostring(info.otomonFixedId) .. "] " .. info.otomonName .. " - Lv." .. tostring(info.currentLv)
 end
 
 local function buildSortedRankLowerLimitPtsList(otomonFixedId)
     local rankLowerLimitPtsList = {}
     for i = 1, #state.ecoRankFixedEnum.fixedId do
-        local rankLowerLimitPts = M.getLowerLimitPtsByOtoFixedIdAndRank(
-            otomonFixedId,
-            state.ecoRankFixedEnum.content[i]
-        )
+        local rankLowerLimitPts =
+            M.getLowerLimitPtsByOtoFixedIdAndRank(otomonFixedId, state.ecoRankFixedEnum.content[i])
         rankLowerLimitPtsList[state.ecoRankFixedEnum.fixedId[i]] = rankLowerLimitPts
     end
 
@@ -108,7 +105,10 @@ local function getAvailableVaryOptionsForSlot(slotIdx)
 end
 
 local function assignSlotSelectionFromOptions(slot, availableOptions, preferKey)
-    slot.combo = { name = {}, fixedId = {} }
+    slot.combo = {
+        name = {},
+        fixedId = {}
+    }
 
     for i = 1, #availableOptions do
         table.insert(slot.combo.name, buildVaryComboLabel(availableOptions[i]))
@@ -139,10 +139,7 @@ local function buildOtomonInfoByAreaAndFixedId(areaFixedId, otomonFixedId)
     end
 
     local pts = state.cSaveDataHelperArea:call(
-        "getOtCurrentEcoPtsFromTable(app.StageDef.AreaID_Fixed, app.OtomonDef.ID_Fixed)",
-        areaFixedId,
-        otomonFixedId
-    )
+        "getOtCurrentEcoPtsFromTable(app.StageDef.AreaID_Fixed, app.OtomonDef.ID_Fixed)", areaFixedId, otomonFixedId)
     if pts == nil then
         pts = 0
     end
@@ -164,14 +161,14 @@ local function findAreaCDataByAreaFixedId(areaFixedId)
             if cData ~= nil and cData:call("get_ID()") == areaFixedId then
                 return {
                     obj = cData,
-                    idx = i,
+                    idx = i
                 }
             end
         end
     end
     return {
         obj = nil,
-        idx = -1,
+        idx = -1
     }
 end
 
@@ -205,7 +202,8 @@ function M.getCurrentLvByOtoFixedId(otomonFixedId, ecoPts)
 end
 
 function M.getLowerLimitPtsByOtoFixedIdAndRank(otomonFixedId, rankContent)
-    local pts = state.ecoManager:call("getEcoRankLowerLimitPoint(app.EcoDef.ECOLOGY_RANK_Fixed, app.OtomonDef.ID_Fixed)",
+    local pts = state.ecoManager:call(
+        "getEcoRankLowerLimitPoint(app.EcoDef.ECOLOGY_RANK_Fixed, app.OtomonDef.ID_Fixed)",
         state.ecoRankFixedEnum.contentToFixedId[rankContent], otomonFixedId)
     if pts ~= nil then
         return tonumber(pts)
@@ -252,7 +250,7 @@ function M.setComboOtomonFixedAndVaryListByAreaFixedId(areaFixedId)
 
     state.comboFixedOtomon = {
         name = {},
-        fixedId = {},
+        fixedId = {}
     }
     state.currentSelectedFixedOtomonIdx = 1
     state.currentSelectedFixedOtomonInfo = nil
@@ -267,10 +265,9 @@ function M.setComboOtomonFixedAndVaryListByAreaFixedId(areaFixedId)
                 end
             end
             if flag then
-                local displayVal = "[" ..
-                    tostring(singleAreaInfo.fixed[i].otomonFixedId) .. "] " .. singleAreaInfo.fixed[i].otomonName ..
-                    " - Lv." ..
-                    tostring(singleAreaInfo.fixed[i].currentLv)
+                local displayVal = "[" .. tostring(singleAreaInfo.fixed[i].otomonFixedId) .. "] " ..
+                                       singleAreaInfo.fixed[i].otomonName .. " - Lv." ..
+                                       tostring(singleAreaInfo.fixed[i].currentLv)
                 table.insert(state.comboFixedOtomon.name, displayVal)
                 table.insert(state.comboFixedOtomon.fixedId, singleAreaInfo.fixed[i].otomonFixedId)
             end
@@ -306,7 +303,9 @@ function M.buildVaryOtomonPool(areaFixedId)
     state.varyOtomonPool = {}
     state.varyOptionDict = {}
     local areaData = state.areaInfo[tostring(areaFixedId)]
-    if areaData == nil then return end
+    if areaData == nil then
+        return
+    end
 
     -- collect fixed otomon fixedIds as a set for exclusion
     local fixedOtomonSet = {}
@@ -342,7 +341,7 @@ function M.buildVaryOtomonPool(areaFixedId)
                 state.varyOptionDict[enumKey] = {
                     info = info,
                     selected = false,
-                    selectedBy = nil,
+                    selectedBy = nil
                 }
             end
         end
@@ -394,11 +393,14 @@ function M.initVarySlots(resetSelections)
     state.varySlots = {}
     for i = 1, varyNum do
         state.varySlots[i] = {
-            combo = { name = {}, fixedId = {} },
+            combo = {
+                name = {},
+                fixedId = {}
+            },
             selectedIdx = 1,
             selectedOtomonFixedId = prevSelections[i],
             otomonInfo = nil,
-            ecoPtsDiffList = {},
+            ecoPtsDiffList = {}
         }
     end
 
@@ -449,16 +451,22 @@ end
 -- Set otomon info and ecoPtsDiffList for a vary slot
 function M.setVarySlotOtomonInfo(slotIdx)
     local slot = state.varySlots[slotIdx]
-    if slot == nil then return end
+    if slot == nil then
+        return
+    end
 
     slot.otomonInfo = nil
     slot.ecoPtsDiffList = {}
 
     local areaFixedId = state.comboAreaNameAndFixedId.fixedId[state.currentSelectedAreaIdx]
-    if areaFixedId == nil then return end
+    if areaFixedId == nil then
+        return
+    end
 
     local selectedFixedId = slot.selectedOtomonFixedId
-    if selectedFixedId == nil then return end
+    if selectedFixedId == nil then
+        return
+    end
 
     -- find from vary pool (already constrained by enum and filtered by fixed exclusion)
     local selectedKey = getFixedIdKey(selectedFixedId)
@@ -469,7 +477,9 @@ function M.setVarySlotOtomonInfo(slotIdx)
         end
     end
 
-    if slot.otomonInfo == nil then return end
+    if slot.otomonInfo == nil then
+        return
+    end
 
     slot.ecoPtsDiffList = rankLogic.buildEcoPtsDiffList(slot.otomonInfo)
 end
@@ -478,18 +488,18 @@ end
 function M.addEcoPtsForVarySlot(slotIdx, ecoPtsDiff)
     coreApi.executeUserCmd(function()
         local slot = state.varySlots[slotIdx]
-        if slot == nil or slot.otomonInfo == nil then return end
+        if slot == nil or slot.otomonInfo == nil then
+            return
+        end
 
         local areaFixedId = state.comboAreaNameAndFixedId.fixedId[state.currentSelectedAreaIdx]
         local otomonFixedId = slot.selectedOtomonFixedId
 
         state.cSaveDataHelperArea:call(
             "addEcoPointToTable(app.StageDef.AreaID_Fixed, System.Collections.Generic.Dictionary`2<System.Int32,System.Int16>)",
-            areaFixedId,
-            coreApi.createCSharpDictInt32Int16Instance({
+            areaFixedId, coreApi.createCSharpDictInt32Int16Instance({
                 [otomonFixedId] = ecoPtsDiff
-            })
-        )
+            }))
 
         M.getAreaInfo()
     end)
@@ -502,7 +512,7 @@ function M.getAreaInfo()
         -- clear combo cache before rebuilding to avoid duplicated entries
         state.comboAreaNameAndFixedId = {
             name = {},
-            fixedId = {},
+            fixedId = {}
         }
 
         local areaInfoTemp = {}
@@ -510,9 +520,7 @@ function M.getAreaInfo()
         for i = 1, #state.areaFixedIdEnum.fixedId do
             local cAreaWork = state.cSaveDataHelperArea:call(
                 "getAreaSaveData(app.StageDef.AreaID_Fixed, app.savedata.cUserSaveDataParam)",
-                state.areaFixedIdEnum.fixedId[i],
-                state.cUserSaveDataParam
-            )
+                state.areaFixedIdEnum.fixedId[i], state.cUserSaveDataParam)
             if cAreaWork ~= nil then
                 local ecoTableWorkList = cAreaWork:get_field("_EcoTable")
 
@@ -525,21 +533,12 @@ function M.getAreaInfo()
                             if tostring(otomonIdFixed) ~= invalidOtomonFixedId then
                                 local pts = state.cSaveDataHelperArea:call(
                                     "getOtCurrentEcoPtsFromTable(app.StageDef.AreaID_Fixed, app.OtomonDef.ID_Fixed)",
-                                    state.areaFixedIdEnum.fixedId[i],
-                                    otomonIdFixed
-                                )
+                                    state.areaFixedIdEnum.fixedId[i], otomonIdFixed)
                                 local fixedFlag = ecoTableWork:get_field("FixedFlag")
                                 local lockFlag = ecoTableWork:get_field("LockFlag")
-                                local item = buildAreaOtomonItem(
-                                    i,
-                                    state.areaFixedIdEnum.fixedId[i],
-                                    M.getAreaNameByAreaFixedId(state.areaFixedIdEnum.fixedId[i]),
-                                    cAreaWork,
-                                    otomonIdFixed,
-                                    pts,
-                                    fixedFlag,
-                                    lockFlag
-                                )
+                                local item = buildAreaOtomonItem(i, state.areaFixedIdEnum.fixedId[i],
+                                    M.getAreaNameByAreaFixedId(state.areaFixedIdEnum.fixedId[i]), cAreaWork,
+                                    otomonIdFixed, pts, fixedFlag, lockFlag)
                                 table.insert(areaInfoTemp, item)
                             end
                         end
@@ -563,7 +562,7 @@ function M.getAreaInfo()
                         M.getVaryNumByAreaFixedId(areaInfoTemp[i].areaFixedId),
                     varyNum = M.getVaryNumByAreaFixedId(areaInfoTemp[i].areaFixedId),
                     fixed = {},
-                    unlocked = {},
+                    unlocked = {}
                 }
 
                 if areaInfoTemp[i].areaName ~= nil and areaInfoTemp[i].areaName ~= "" then
@@ -621,11 +620,9 @@ function M.addEcoPtsByAreaFixedIdAndOtomonFixedId(ecoPtsDiff)
         local otomonFixedId = state.currentSelectedFixedOtomonInfo.otomonFixedId
         state.cSaveDataHelperArea:call(
             "addEcoPointToTable(app.StageDef.AreaID_Fixed, System.Collections.Generic.Dictionary`2<System.Int32,System.Int16>)",
-            areaFixedId,
-            coreApi.createCSharpDictInt32Int16Instance({
+            areaFixedId, coreApi.createCSharpDictInt32Int16Instance({
                 [otomonFixedId] = ecoPtsDiff
-            })
-        )
+            }))
         M.getAreaInfo()
     end)
 end
@@ -647,11 +644,17 @@ function M.updateVaryOtomonEcoList(newOtomonList)
         end
         state.cSaveDataHelperArea:call(
             "overwriteEcoTable(app.StageDef.AreaID_Fixed, System.Collections.Generic.List`1<app.OtomonDef.ID_Fixed>)",
-            areaFixedId,
-            reList
-        )
+            areaFixedId, reList)
         M.getAreaInfo()
     end)
+end
+
+function M.isOtomomCanGetEggInAnyArea(otomonFixedId)
+    local areaList = state.ecoManager:call("getEggAreaList(app.OtomonDef.ID_Fixed)", otomonFixedId)
+    if areaList == nil then
+        return false
+    end
+    return areaList:call("get_Count()") > 0
 end
 
 return M

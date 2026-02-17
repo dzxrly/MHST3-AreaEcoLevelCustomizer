@@ -5,7 +5,6 @@ local config = require("AreaEcoLevelCustomizer.config")
 local rankLogic = require("AreaEcoLevelCustomizer.rank_logic")
 local i18n = require("AreaEcoLevelCustomizer.i18n")
 
-
 local M = {}
 
 local function getCurrentSelectedAreaInfo()
@@ -54,9 +53,8 @@ end
 
 local function drawFixedSection()
     imgui.text(i18n.getUIText("fixed_monsters_max", getCurrentSelectedAreaInfo().fixedNum))
-    state.selectedFixedOtomonChanged, state.currentSelectedFixedOtomonIdx = imgui.combo(
-        i18n.getUIText("selected_fixed_otomon_label") .. "##selected_fixed_otomon",
-        state.currentSelectedFixedOtomonIdx,
+    state.selectedFixedOtomonChanged, state.currentSelectedFixedOtomonIdx = imgui.combo(i18n.getUIText(
+        "selected_fixed_otomon_label") .. "##selected_fixed_otomon", state.currentSelectedFixedOtomonIdx,
         state.comboFixedOtomon.name)
     if state.selectedAreaChanged or state.selectedFixedOtomonChanged then
         dataHelper.setCurrentSelectedFixedOtomonInfo()
@@ -64,32 +62,23 @@ local function drawFixedSection()
 
     imgui.text(i18n.getUIText("current_selected_otomon_rank_boundary"))
     if state.currentSelectedFixedOtomonInfo ~= nil then
-        drawRankBoundary(
-            state.currentSelectedFixedOtomonInfo.currentLv,
-            state.currentSelectedFixedOtomonInfo.rankLowerLimitPtsList
-        )
+        drawRankBoundary(state.currentSelectedFixedOtomonInfo.currentLv,
+            state.currentSelectedFixedOtomonInfo.rankLowerLimitPtsList)
     end
 
-    drawEcoDiffButtons(
-        state.currentSelectedFixedOtomonEcoPtsDiffList,
-        function(item, idx)
-            return i18n.getUIText("level_up_to", item.rank) .. "##fixed_lvup_" .. tostring(idx)
-        end,
-        config.SMALL_BTN,
-        function(diff)
-            dataHelper.addEcoPtsByAreaFixedIdAndOtomonFixedId(diff)
-        end
-    )
+    drawEcoDiffButtons(state.currentSelectedFixedOtomonEcoPtsDiffList, function(item, idx)
+        return i18n.getUIText("level_up_to", item.rank) .. "##fixed_lvup_" .. tostring(idx)
+    end, config.SMALL_BTN, function(diff)
+        dataHelper.addEcoPtsByAreaFixedIdAndOtomonFixedId(diff)
+    end)
 end
 
 local function drawSingleVarySlot(slotI, slot)
     imgui.begin_group()
     imgui.push_item_width(config.VARY_GROUP_WIDTH)
 
-    local changed, newIdx = imgui.combo(
-        i18n.getUIText("slot_label", slotI) .. "##vary_combo_" .. tostring(slotI),
-        slot.selectedIdx,
-        slot.combo.name)
+    local changed, newIdx = imgui.combo(i18n.getUIText("slot_label", slotI) .. "##vary_combo_" .. tostring(slotI),
+        slot.selectedIdx, slot.combo.name)
     if changed then
         dataHelper.onVarySlotChanged(slotI, newIdx)
     end
@@ -104,16 +93,11 @@ local function drawSingleVarySlot(slotI, slot)
         imgui.text(i18n.getUIText("rank_boundary"))
         drawRankBoundary(slot.otomonInfo.currentLv, slot.otomonInfo.rankLowerLimitPtsList)
 
-        drawEcoDiffButtons(
-            slot.ecoPtsDiffList,
-            function(item, idx)
-                return i18n.getUIText("to_rank", item.rank) .. "##vary_" .. tostring(slotI) .. "_" .. tostring(idx)
-            end,
-            config.VARY_BTN,
-            function(diff)
-                dataHelper.addEcoPtsForVarySlot(slotI, diff)
-            end
-        )
+        drawEcoDiffButtons(slot.ecoPtsDiffList, function(item, idx)
+            return i18n.getUIText("to_rank", item.rank) .. "##vary_" .. tostring(slotI) .. "_" .. tostring(idx)
+        end, config.VARY_BTN, function(diff)
+            dataHelper.addEcoPtsForVarySlot(slotI, diff)
+        end)
     end
 
     imgui.pop_item_width()
@@ -140,12 +124,11 @@ end
 function M.drawUI()
     if state.cUserSaveDataParam ~= nil and not coreApi.isTableEmpty(state.areaInfo) then
         state.selectedAreaChanged, state.currentSelectedAreaIdx = imgui.combo(
-            i18n.getUIText("selected_area_label") .. "##selected_area",
-            state.currentSelectedAreaIdx,
+            i18n.getUIText("selected_area_label") .. "##selected_area", state.currentSelectedAreaIdx,
             state.comboAreaNameAndFixedId.name)
         if state.selectedAreaChanged then
-            dataHelper.setComboOtomonFixedAndVaryListByAreaFixedId(state.comboAreaNameAndFixedId.fixedId
-                [state.currentSelectedAreaIdx])
+            dataHelper.setComboOtomonFixedAndVaryListByAreaFixedId(
+                state.comboAreaNameAndFixedId.fixedId[state.currentSelectedAreaIdx])
         end
 
         drawFixedSection()

@@ -6,54 +6,20 @@ local i18n = require("AreaEcoLevelCustomizer.i18n")
 
 local M = {}
 
-local function appendEnumValue(enumState, enumName, enumValue)
-    enumState.fixedIdToContent[enumValue] = enumName
-    enumState.contentToFixedId[enumName] = enumValue
-    table.insert(enumState.fixedId, enumValue)
-    table.insert(enumState.content, enumName)
-end
-
-local function parseEnumFields(typeName, enumState, dedupeByValue)
-    local typeDef = sdk.find_type_definition(typeName)
-    if typeDef == nil then
-        return
-    end
-
-    local enumFields = typeDef:get_fields()
-    if enumFields == nil then
-        return
-    end
-
-    local seenEnumValue = {}
-    for _, field in ipairs(enumFields) do
-        if field:is_static() then
-            local enumName = field:get_name()
-            local enumValue = field:get_data(nil)
-            local valueKey = tostring(enumValue)
-            if coreApi.isValidEnumName(enumName) and (not dedupeByValue or not seenEnumValue[valueKey]) then
-                seenEnumValue[valueKey] = true
-                appendEnumValue(enumState, enumName, enumValue)
-            end
-        end
-    end
-end
-
-
 local function getCSaveDataHelper()
     return sdk.get_managed_singleton("app.SaveDataManager"):get_field("_Helper")
 end
 
-
 local function rankEnumParser()
-    parseEnumFields("app.EcoDef.ECOLOGY_RANK_Fixed", state.ecoRankFixedEnum, false)
+    coreApi.parseEnumFields("app.EcoDef.ECOLOGY_RANK_Fixed", state.ecoRankFixedEnum, false)
 end
 
 local function areaFixedIdEnumParser()
-    parseEnumFields("app.StageDef.AreaID_Fixed", state.areaFixedIdEnum, false)
+    coreApi.parseEnumFields("app.StageDef.AreaID_Fixed", state.areaFixedIdEnum, false)
 end
 
 local function otomonFixedIdEnumParser()
-    parseEnumFields("app.OtomonDef.ID_Fixed", state.otomonFixedIdEnum, true)
+    coreApi.parseEnumFields("app.OtomonDef.ID_Fixed", state.otomonFixedIdEnum, true)
 
     local cSaveDataHelperEgg = getCSaveDataHelper():get_field("_Egg")
     -- filter out invalid otomon from state.otomonFixedIdEnum
@@ -61,16 +27,16 @@ local function otomonFixedIdEnumParser()
         fixedIdToContent = {},
         contentToFixedId = {},
         fixedId = {},
-        content = {},
+        content = {}
     }
     local seenValidFixedId = {}
     for i = 1, #state.otomonFixedIdEnum.fixedId do
         local fixedId = state.otomonFixedIdEnum.fixedId[i]
         local content = state.otomonFixedIdEnum.fixedIdToContent[fixedId]
         local fixedIdKey = tostring(fixedId)
-        if cSaveDataHelperEgg:call("isHatchedOtomon(app.OtomonDef.ID_Fixed)", fixedId) and
-            fixedId ~= config.RATH_FIXED_ID and
-            not seenValidFixedId[fixedIdKey] then
+
+        if fixedId ~= config.RATH_FIXED_ID and not seenValidFixedId[fixedIdKey] and
+            dataHelper.isOtomomCanGetEggInAnyArea(fixedId) then
             seenValidFixedId[fixedIdKey] = true
             validOtomonFixedIdEnum.fixedIdToContent[fixedId] = content
             validOtomonFixedIdEnum.contentToFixedId[content] = fixedId

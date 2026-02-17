@@ -3,7 +3,7 @@ local function createEnumState()
         fixedIdToContent = {},
         contentToFixedId = {},
         fixedId = {},
-        content = {},
+        content = {}
     }
 end
 
@@ -22,11 +22,11 @@ local function createState()
         areaInfo = {},
         comboAreaNameAndFixedId = {
             name = {},
-            fixedId = {},
+            fixedId = {}
         },
         comboFixedOtomon = {
             name = {},
-            fixedId = {},
+            fixedId = {}
         },
         currentSelectedAreaIdx = 1,
         selectedAreaChanged = false,
@@ -37,7 +37,7 @@ local function createState()
         currentSelectedFixedOtomonEcoPtsDiffList = {},
         varyOtomonPool = {},
         varyOptionDict = {},
-        varySlots = {},
+        varySlots = {}
     }
 end
 

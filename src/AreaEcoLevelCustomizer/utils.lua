@@ -40,9 +40,9 @@ local function installUserCmdHook()
 end
 
 function M.isValidEnumName(enumName)
-    --filter enum_none, enum_max, enum_unknown, enum_invalid from enum
+    -- filter enum_none, enum_max, enum_unknown, enum_invalid from enum
     return tostring(enumName) ~= enum_none and tostring(enumName) ~= enum_max and tostring(enumName) ~= enum_unknown and
-        tostring(enumName) ~= enum_invalid
+               tostring(enumName) ~= enum_invalid
 end
 
 function M.flagByteToBool(flagByte, isToString)
@@ -51,6 +51,38 @@ function M.flagByteToBool(flagByte, isToString)
         return tostring(flagBool)
     else
         return flagBool
+    end
+end
+
+function M.appendEnumValue(enumState, enumName, enumValue)
+    enumState.fixedIdToContent[enumValue] = enumName
+    enumState.contentToFixedId[enumName] = enumValue
+    table.insert(enumState.fixedId, enumValue)
+    table.insert(enumState.content, enumName)
+end
+
+function M.parseEnumFields(typeName, enumState, dedupeByValue)
+    local typeDef = sdk.find_type_definition(typeName)
+    if typeDef == nil then
+        return
+    end
+
+    local enumFields = typeDef:get_fields()
+    if enumFields == nil then
+        return
+    end
+
+    local seenEnumValue = {}
+    for _, field in ipairs(enumFields) do
+        if field:is_static() then
+            local enumName = field:get_name()
+            local enumValue = field:get_data(nil)
+            local valueKey = tostring(enumValue)
+            if M.isValidEnumName(enumName) and (not dedupeByValue or not seenEnumValue[valueKey]) then
+                seenEnumValue[valueKey] = true
+                M.appendEnumValue(enumState, enumName, enumValue)
+            end
+        end
     end
 end
 
@@ -71,7 +103,9 @@ function M.uniqueImguiText(text, suffix)
 end
 
 function M.CSharpDictEnumerator(dictObj)
-    if not dictObj then return {} end
+    if not dictObj then
+        return {}
+    end
     local count = dictObj:call("get_Count")
     if not count or count == 0 then
         return {}
@@ -90,7 +124,10 @@ function M.CSharpDictEnumerator(dictObj)
             local k = entry:get_field("key")
             local v = entry:get_field("value")
             if k ~= nil and v ~= nil then
-                table.insert(result, { key = k, value = v })
+                table.insert(result, {
+                    key = k,
+                    value = v
+                })
             end
         end
     end
@@ -98,7 +135,9 @@ function M.CSharpDictEnumerator(dictObj)
 end
 
 function M.createCSharpDictInt32Int16Instance(luaTable)
-    if luaTable == nil then return nil end
+    if luaTable == nil then
+        return nil
+    end
     local typeName = "System.Collections.Generic.Dictionary`2<System.Int32,System.Int16>"
     local dictTypeDef = sdk.find_type_definition(typeName)
     if dictTypeDef == nil then
@@ -122,7 +161,9 @@ function M.createCSharpDictInt32Int16Instance(luaTable)
 end
 
 function M.CSharpListEnumerator(listObj)
-    if not listObj then return {} end
+    if not listObj then
+        return {}
+    end
     local count = listObj:call("get_Count")
     if not count then
         count = listObj:get_field("_size")
@@ -147,7 +188,9 @@ function M.CSharpListEnumerator(listObj)
 end
 
 function M.createCSharpListInstance(luaArray)
-    if not luaArray then return nil end
+    if not luaArray then
+        return nil
+    end
     local typeName = "System.Collections.Generic.List`1<app.OtomonDef.ID_Fixed>"
     local listTypeDef = sdk.find_type_definition(typeName)
     if not listTypeDef then

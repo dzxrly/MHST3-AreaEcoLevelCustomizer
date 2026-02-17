@@ -38,7 +38,7 @@ function M.buildEcoPtsDiffList(info)
         table.insert(result, {
             rank = rankList[i].rank,
             diff = rankList[i].pts - info.ecoPts,
-            enabled = (currentIdx ~= nil and i < currentIdx),
+            enabled = (currentIdx ~= nil and i < currentIdx)
         })
     end
 
