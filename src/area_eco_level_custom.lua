@@ -1,7 +1,6 @@
 --- Area Eco Level Custom
 --- Author: Egg Targaryen
 --- For Monster Hunter Stories 3
-
 local init = require("AreaEcoLevelCustomizer.init")
 local ui = require("AreaEcoLevelCustomizer.ui")
 local state = require("AreaEcoLevelCustomizer.state")
@@ -12,17 +11,24 @@ local i18n = require("AreaEcoLevelCustomizer.i18n")
 local isBtnClicked = false
 
 -- DO NOT CHANGE THE NEXT LINE, ONLY UPDATE THE VERSION NUMBER
-local modVersion = "v0.2.0"
+local modVersion = "v0.3.0"
 -- DO NOT CHANGE THE PREVIOUS LINE
 
-
-re.on_application_entry("UpdateScene", function()
-    if state.cUserSaveDataParam == nil then
-        state.resetState()
-        init.onStart()
-        coreApi.setUserCmdPostHook(init.modInit)
-    end
+sdk.hook(sdk.find_type_definition("app.SaveDataManager"):get_method("getTitleText()"), function(args)
+end, function(retval)
+    state.resetState()
+    init.onStart()
+    coreApi.setUserCmdPostHook(init.modInit)
+    return retval
 end)
+
+-- re.on_application_entry("UpdateScene", function()
+--     if state.cUserSaveDataParam == nil then
+--         state.resetState()
+--         init.onStart()
+--         coreApi.setUserCmdPostHook(init.modInit)
+--     end
+-- end)
 
 re.on_draw_ui(function()
     if imgui.tree_node("Area Eco Level Custom") then
