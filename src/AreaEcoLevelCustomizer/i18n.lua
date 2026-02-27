@@ -4,9 +4,10 @@
 --- 11: Korean
 --- 12: Chinese (Traditional)
 --- 13: Chinese (Simplified)
-local state = require("AreaEcoLevelCustomizer.state")
+local coreApi = require("AreaEcoLevelCustomizer.utils")
 
 local M = {
+    languageIdx = 1,
     text = {
         [0] = {
             save_data_warning = "使用前に必ずセーブデータをバックアップしてください！！！",
@@ -92,73 +93,46 @@ local M = {
 }
 
 local function getCurrentTextLanguage()
-    if state ~= nil and state.cSaveDataHelperOption ~= nil then
-        local textLang = state.cSaveDataHelperOption:call("getCharacterLanguage()")
-        if textLang ~= nil then
-            return textLang
-        end
-    end
-    return 1
+    return tonumber(M.languageIdx) or 1
 end
 
-function M.initLanguage()
-    local existingLangOpts = {}
-    for key, _ in pairs(M.text) do
-        table.insert(existingLangOpts, key)
+local function getCharacterLanguage(cSaveDataHelperOption)
+    if cSaveDataHelperOption == nil then
+        return nil
     end
-
-    if state.cSaveDataHelperOption == nil then
-        state.languageIdx = 1
-        return
-    end
-
-    local inGameLang = tonumber(state.cSaveDataHelperOption:call("getCharacterLanguage()"))
-    local isLangSupported = false
-    for _, lang in ipairs(existingLangOpts) do
-        if lang == inGameLang then
-            isLangSupported = true
-            break
-        end
-    end
-
-    if not isLangSupported then
-        state.languageIdx = 1
-    else
-        state.languageIdx = inGameLang
-    end
-end
-
-function M.getUIText(key, ...)
-    local lang = getCurrentTextLanguage()
-    local langText = M.text[lang]
-    local text = nil
-    if langText ~= nil then
-        text = langText[key]
-    end
-    if text == nil and M.text[1] ~= nil then
-        text = M.text[1][key]
-    end
-    if text == nil then
-        return tostring(key)
-    end
-    if select("#", ...) > 0 then
-        return string.format(text, ...)
-    end
-    return text
-end
-
-function M.getTextLanguage(guid)
-    local textLang = state.cSaveDataHelperOption:call("getCharacterLanguage()")
+    local textLang = cSaveDataHelperOption:call("getCharacterLanguage()")
     if textLang ~= nil then
-        local viaGUIMsgGet = sdk.find_type_definition("via.gui.message"):get_method("get(System.Guid, via.Language)")
-        if viaGUIMsgGet ~= nil then
-            local text = viaGUIMsgGet(nil, guid, textLang)
-            if text ~= nil then
-                return tostring(text)
+        return tonumber(textLang)
+    end
+    return nil
+end
+
+function M.initLanguage(cSaveDataHelperOption)
+    local existingLangOpts = coreApi.collectTableNumberKeys(M.text)
+    local inGameLang = getCharacterLanguage(cSaveDataHelperOption)
+
+    if inGameLang == nil then
+        local saveDataManager = sdk.get_managed_singleton("app.SaveDataManager")
+        if saveDataManager ~= nil then
+            local helper = saveDataManager:get_field("_Helper")
+            if helper ~= nil then
+                local optionHelper = helper:get_field("_Option")
+                inGameLang = getCharacterLanguage(optionHelper)
             end
         end
     end
-    return tostring(guid)
+
+    M.languageIdx = coreApi.getSupportedLanguageOrDefault(inGameLang, existingLangOpts, 1)
+    return M.languageIdx
+end
+
+function M.getUIText(key, ...)
+    return coreApi.getLocalizedText(M.text, key, getCurrentTextLanguage(), 1, ...)
+end
+
+function M.getTextLanguage(guid, cSaveDataHelperOption)
+    local textLang = getCharacterLanguage(cSaveDataHelperOption) or getCurrentTextLanguage()
+    return coreApi.getGuidTextByLanguage(guid, textLang)
 end
 
 return M

@@ -1,3 +1,9 @@
+--- 通用工具模块。
+---
+--- 提供日志、枚举解析、C# 集合读写、用户命令调度以及 i18n 通用辅助方法。
+--- 该模块依赖 REFramework 运行时中的 `sdk` 全局对象。
+---
+--- @alias EnumState { fixedIdToContent: table, contentToFixedId: table, fixedId: table, content: table }
 local M = {}
 local pendingUserCmds = {}
 local userCmdHookInstalled = false
@@ -8,6 +14,8 @@ local enum_max = "MAX"
 local enum_unknown = "UNKNOWN"
 local enum_invalid = "INVALID"
 
+--- 统一前缀打印。
+--- @param ... any 可变参数日志内容。
 local function modPrint(...)
     local argCount = select("#", ...)
     if argCount == 0 then
@@ -22,10 +30,14 @@ local function modPrint(...)
     print("[" .. modName .. "] " .. table.concat(parts, "\t"))
 end
 
+--- 打印模块日志。
+--- @param ... any 可变参数日志内容。
 function M.log(...)
     modPrint(...)
 end
 
+--- 初始化模块名，用于日志前缀显示。
+--- @param initModName string|nil 模块名称。
 function M.init(initModName)
     if initModName == nil then
         modPrint("Warning: init called with nil mod name, keeping existing prefix")
@@ -37,6 +49,7 @@ function M.init(initModName)
     end
 end
 
+--- 安装 GUI update 钩子，用于在主线程执行延迟命令。
 local function installUserCmdHook()
     if userCmdHookInstalled then
         return
@@ -70,12 +83,19 @@ local function installUserCmdHook()
     end)
 end
 
+--- 判断枚举名称是否为有效值（排除 NONE / MAX / UNKNOWN / INVALID）。
+--- @param enumName string|integer|number 枚举名称。
+--- @return boolean
 function M.isValidEnumName(enumName)
     -- filter enum_none, enum_max, enum_unknown, enum_invalid from enum
     return tostring(enumName) ~= enum_none and tostring(enumName) ~= enum_max and tostring(enumName) ~= enum_unknown and
-               tostring(enumName) ~= enum_invalid
+        tostring(enumName) ~= enum_invalid
 end
 
+--- 将字节标志转换为布尔值（或布尔字符串）。
+--- @param flagByte integer|number|string 标志字节（通常 255 表示 true）。
+--- @param isToString boolean|nil 是否返回字符串形式。
+--- @return boolean|string
 function M.flagByteToBool(flagByte, isToString)
     local flagBool = tostring(flagByte) == "255"
     if isToString then
@@ -85,6 +105,10 @@ function M.flagByteToBool(flagByte, isToString)
     end
 end
 
+--- 向枚举状态容器追加一个枚举项。
+--- @param enumState EnumState 枚举状态表，需包含 fixedIdToContent/contentToFixedId/fixedId/content 字段。
+--- @param enumName string 枚举名称。
+--- @param enumValue integer|number 枚举值。
 function M.appendEnumValue(enumState, enumName, enumValue)
     enumState.fixedIdToContent[enumValue] = enumName
     enumState.contentToFixedId[enumName] = enumValue
@@ -92,6 +116,10 @@ function M.appendEnumValue(enumState, enumName, enumValue)
     table.insert(enumState.content, enumName)
 end
 
+--- 解析指定类型下的静态枚举字段并写入枚举状态表。
+--- @param typeName string 类型全名。
+--- @param enumState EnumState 枚举状态表。
+--- @param dedupeByValue boolean 是否按枚举值去重。
 function M.parseEnumFields(typeName, enumState, dedupeByValue)
     local typeDef = sdk.find_type_definition(typeName)
     if typeDef == nil then
@@ -119,6 +147,9 @@ function M.parseEnumFields(typeName, enumState, dedupeByValue)
     end
 end
 
+--- 判断表是否为空，兼容字典结构。
+--- @param table table|nil 要判断的表。
+--- @return boolean
 function M.isTableEmpty(table)
     -- compatible with dictionary
     if table == nil then
@@ -131,10 +162,17 @@ function M.isTableEmpty(table)
     return len == 0
 end
 
+--- 生成 ImGui 唯一文本（可见文本 + ID 后缀）。
+--- @param text string 可见文本。
+--- @param suffix string|number 唯一后缀。
+--- @return string
 function M.uniqueImguiText(text, suffix)
     return text .. "##" .. suffix
 end
 
+--- 枚举 C# Dictionary 对象，转换为 Lua 数组。
+--- @param dictObj userdata|nil C# Dictionary 实例。
+--- @return table[]
 function M.CSharpDictEnumerator(dictObj)
     if not dictObj then
         return {}
@@ -167,6 +205,9 @@ function M.CSharpDictEnumerator(dictObj)
     return result
 end
 
+--- 基于 Lua 表创建 `Dictionary<int, short>` C# 实例。
+--- @param luaTable table<integer, integer>|nil 键值对表。
+--- @return userdata|nil
 function M.createCSharpDictInt32Int16Instance(luaTable)
     if luaTable == nil then
         modPrint("Error: createCSharpDictInt32Int16Instance received nil input table")
@@ -195,6 +236,9 @@ function M.createCSharpDictInt32Int16Instance(luaTable)
     return dictInstance
 end
 
+--- 枚举 C# List 对象，转换为 Lua 数组。
+--- @param listObj userdata|nil C# List 实例。
+--- @return number[]
 function M.CSharpListEnumerator(listObj)
     if not listObj then
         return {}
@@ -222,6 +266,9 @@ function M.CSharpListEnumerator(listObj)
     return result
 end
 
+--- 基于 Lua 数组创建 `List<app.OtomonDef.ID_Fixed>` C# 实例。
+--- @param luaArray integer[]|nil Lua 数组。
+--- @return userdata|nil
 function M.createCSharpListInstance(luaArray)
     if not luaArray then
         modPrint("Error: createCSharpListInstance received nil input array")
@@ -249,10 +296,14 @@ function M.createCSharpListInstance(luaArray)
     return listInstance
 end
 
+--- 设置用户命令批处理完成后的回调。
+--- @param hookFunc fun()|nil 回调函数。
 function M.setUserCmdPostHook(hookFunc)
     postUserCmdHook = hookFunc
 end
 
+--- 将函数加入用户命令队列，在 GUI update 钩子内执行。
+--- @param executeFunc fun()|nil 要执行的函数。
 function M.executeUserCmd(executeFunc)
     if executeFunc == nil then
         modPrint("Warning: executeUserCmd called with nil function")
@@ -260,6 +311,105 @@ function M.executeUserCmd(executeFunc)
     end
     installUserCmdHook()
     table.insert(pendingUserCmds, executeFunc)
+end
+
+--- 收集表中的数值型键。
+--- @param sourceTable table<integer|string, unknown>|nil 源表。
+--- @return integer[]
+function M.collectTableNumberKeys(sourceTable)
+    local keys = {}
+    if sourceTable == nil then
+        return keys
+    end
+    for key, _ in pairs(sourceTable) do
+        local numericKey = tonumber(key)
+        if numericKey ~= nil then
+            table.insert(keys, numericKey)
+        end
+    end
+    return keys
+end
+
+--- 判断列表中是否包含目标值。
+--- @param list table|nil 列表。
+--- @param targetValue unknown 目标值。
+--- @return boolean
+function M.containsValue(list, targetValue)
+    if list == nil then
+        return false
+    end
+    for _, value in ipairs(list) do
+        if value == targetValue then
+            return true
+        end
+    end
+    return false
+end
+
+--- 在支持语言列表中选择有效语言，否则回退到默认语言。
+--- @param languageIdx integer|string|nil 待检测语言索引。
+--- @param supportedLanguageList integer[] 支持的语言索引列表。
+--- @param defaultLanguageIdx integer|nil 默认语言索引。
+--- @return integer
+function M.getSupportedLanguageOrDefault(languageIdx, supportedLanguageList, defaultLanguageIdx)
+    local defaultIdx = tonumber(defaultLanguageIdx) or 1
+    local lang = tonumber(languageIdx)
+    if lang == nil then
+        return defaultIdx
+    end
+    if M.containsValue(supportedLanguageList, lang) then
+        return lang
+    end
+    return defaultIdx
+end
+
+--- 按语言索引读取本地化文本，并在缺失时回退到默认语言。
+--- @param languageTextMap table<integer, table<string, string>> 文本映射表，形如 languageTextMap[lang][key]。
+--- @param key string 文本键。
+--- @param languageIdx integer|string|nil 当前语言索引。
+--- @param defaultLanguageIdx integer|nil 默认语言索引。
+--- @param ... string|number `string.format` 参数。
+--- @return string
+function M.getLocalizedText(languageTextMap, key, languageIdx, defaultLanguageIdx, ...)
+    local fallbackLanguageIdx = tonumber(defaultLanguageIdx) or 1
+    local selectedLanguageIdx = tonumber(languageIdx) or fallbackLanguageIdx
+    local selectedLanguageText = nil
+    if languageTextMap ~= nil then
+        selectedLanguageText = languageTextMap[selectedLanguageIdx]
+    end
+
+    local text = nil
+    if selectedLanguageText ~= nil then
+        text = selectedLanguageText[key]
+    end
+    if text == nil and languageTextMap ~= nil and languageTextMap[fallbackLanguageIdx] ~= nil then
+        text = languageTextMap[fallbackLanguageIdx][key]
+    end
+    if text == nil then
+        return tostring(key)
+    end
+    if select("#", ...) > 0 then
+        return string.format(text, ...)
+    end
+    return text
+end
+
+--- 根据语言索引读取 GUID 对应的游戏内文本。
+--- @param guid string|userdata 文本 GUID。
+--- @param languageIdx integer|string|nil 语言索引。
+--- @return string
+function M.getGuidTextByLanguage(guid, languageIdx)
+    local lang = tonumber(languageIdx)
+    if lang ~= nil then
+        local viaGUIMsgGet = sdk.find_type_definition("via.gui.message"):get_method("get(System.Guid, via.Language)")
+        if viaGUIMsgGet ~= nil then
+            local text = viaGUIMsgGet(nil, guid, lang)
+            if text ~= nil then
+                return tostring(text)
+            end
+        end
+    end
+    return tostring(guid)
 end
 
 return M
