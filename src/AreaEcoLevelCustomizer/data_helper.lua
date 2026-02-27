@@ -545,7 +545,7 @@ function M.getAreaInfo()
                     end
                 end
             else
-                print("[Error] Failed to get area save data for area " .. tostring(state.areaFixedIdEnum.content[i]))
+                coreApi.log("Error: failed to get area save data for area " .. tostring(state.areaFixedIdEnum.content[i]))
             end
         end
 

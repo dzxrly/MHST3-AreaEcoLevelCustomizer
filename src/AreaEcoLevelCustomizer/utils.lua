@@ -2,10 +2,40 @@ local M = {}
 local pendingUserCmds = {}
 local userCmdHookInstalled = false
 local postUserCmdHook = nil
+local modName = "UNKNOWN_MOD"
 local enum_none = "NONE"
 local enum_max = "MAX"
 local enum_unknown = "UNKNOWN"
 local enum_invalid = "INVALID"
+
+local function modPrint(...)
+    local argCount = select("#", ...)
+    if argCount == 0 then
+        print("[" .. modName .. "]")
+        return
+    end
+
+    local parts = {}
+    for i = 1, argCount do
+        parts[i] = tostring(select(i, ...))
+    end
+    print("[" .. modName .. "] " .. table.concat(parts, "\t"))
+end
+
+function M.log(...)
+    modPrint(...)
+end
+
+function M.init(initModName)
+    if initModName == nil then
+        modPrint("Warning: init called with nil mod name, keeping existing prefix")
+        return
+    end
+    local name = tostring(initModName)
+    if name ~= "" then
+        modName = name
+    end
+end
 
 local function installUserCmdHook()
     if userCmdHookInstalled then
@@ -13,6 +43,7 @@ local function installUserCmdHook()
     end
     local methodDef = sdk.find_type_definition("app.GUIManager"):get_method("update()")
     if methodDef == nil then
+        modPrint("Error: failed to install user command hook, app.GUIManager.update() not found")
         return
     end
     userCmdHookInstalled = true
@@ -25,13 +56,13 @@ local function installUserCmdHook()
         for i = 1, #current do
             local ok, err = pcall(current[i])
             if not ok then
-                print("[AreaEcoLevelCustomizer] executeUserCmd error: " .. tostring(err))
+                modPrint("executeUserCmd error: " .. tostring(err))
             end
         end
         if postUserCmdHook ~= nil then
             local ok, err = pcall(postUserCmdHook)
             if not ok then
-                print("[AreaEcoLevelCustomizer] postUserCmdHook error: " .. tostring(err))
+                modPrint("postUserCmdHook error: " .. tostring(err))
             end
         end
     end, function(retval)
@@ -64,11 +95,13 @@ end
 function M.parseEnumFields(typeName, enumState, dedupeByValue)
     local typeDef = sdk.find_type_definition(typeName)
     if typeDef == nil then
+        modPrint("Error: enum type definition not found: " .. tostring(typeName))
         return
     end
 
     local enumFields = typeDef:get_fields()
     if enumFields == nil then
+        modPrint("Error: enum fields not found for type: " .. tostring(typeName))
         return
     end
 
@@ -136,18 +169,20 @@ end
 
 function M.createCSharpDictInt32Int16Instance(luaTable)
     if luaTable == nil then
+        modPrint("Error: createCSharpDictInt32Int16Instance received nil input table")
         return nil
     end
     local typeName = "System.Collections.Generic.Dictionary`2<System.Int32,System.Int16>"
     local dictTypeDef = sdk.find_type_definition(typeName)
     if dictTypeDef == nil then
-        print("createCSharpDictInt32Int16Instance: " .. typeName .. " not found")
+        modPrint("createCSharpDictInt32Int16Instance: " .. typeName .. " not found")
         return nil
     end
     local dictInstance = dictTypeDef:create_instance()
     if dictInstance then
         dictInstance:call(".ctor()")
     else
+        modPrint("Error: failed to create dictionary instance for type: " .. typeName)
         return nil
     end
     for k, v in pairs(luaTable) do
@@ -189,18 +224,20 @@ end
 
 function M.createCSharpListInstance(luaArray)
     if not luaArray then
+        modPrint("Error: createCSharpListInstance received nil input array")
         return nil
     end
     local typeName = "System.Collections.Generic.List`1<app.OtomonDef.ID_Fixed>"
     local listTypeDef = sdk.find_type_definition(typeName)
     if not listTypeDef then
-        sdk.request_frame_output("错误: 找不到 List 类型定义: " .. typeName)
+        modPrint("Error: List type definition not found: " .. typeName)
         return nil
     end
     local listInstance = listTypeDef:create_instance()
     if listInstance then
         listInstance:call(".ctor()") -- 必须调用构造函数
     else
+        modPrint("Error: failed to create list instance for type: " .. typeName)
         return nil
     end
     for _, value in ipairs(luaArray) do
@@ -218,6 +255,7 @@ end
 
 function M.executeUserCmd(executeFunc)
     if executeFunc == nil then
+        modPrint("Warning: executeUserCmd called with nil function")
         return
     end
     installUserCmdHook()

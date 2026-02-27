@@ -48,7 +48,7 @@ local function otomonFixedIdEnumParser()
 end
 
 function M.modInit()
-    print("Initializing...")
+    coreApi.log("Initializing...")
     state.cUserSaveDataParam = sdk.get_managed_singleton("app.SaveDataManager"):call("get_UserSaveData()")
     state.ecoManager = sdk.get_managed_singleton("app.EcoManager")
     state.cSaveDataHelperArea = getCSaveDataHelper():get_field("_Area")
@@ -57,13 +57,13 @@ function M.modInit()
     state.stageAreaParamTableData = state.stateManager:call("get_AreaParamTableUserData()")
 
     i18n.initLanguage()
-    print("Language Index: " .. tostring(state.languageIdx))
+    coreApi.log("Language Index: " .. tostring(state.languageIdx))
 
     rankEnumParser()
     areaFixedIdEnumParser()
     otomonFixedIdEnumParser()
 
-    print("Initialization complete")
+    coreApi.log("Initialization complete")
 end
 
 function M.onStart()

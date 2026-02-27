@@ -7,11 +7,12 @@ local state = require("AreaEcoLevelCustomizer.state")
 local coreApi = require("AreaEcoLevelCustomizer.utils")
 local config = require("AreaEcoLevelCustomizer.config")
 local i18n = require("AreaEcoLevelCustomizer.i18n")
+coreApi.init("AreaEcoLevelCustomizer")
 
 local isBtnClicked = false
 
 -- DO NOT CHANGE THE NEXT LINE, ONLY UPDATE THE VERSION NUMBER
-local modVersion = "v0.4.0"
+local modVersion = "v0.4.1"
 -- DO NOT CHANGE THE PREVIOUS LINE
 
 sdk.hook(sdk.find_type_definition("app.SaveDataManager"):get_method("getTitleText()"), function(args)
