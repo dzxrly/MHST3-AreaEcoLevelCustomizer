@@ -84,7 +84,7 @@ local function installUserCmdHook()
 end
 
 --- 判断枚举名称是否为有效值（排除 NONE / MAX / UNKNOWN / INVALID）。
---- @param enumName string|integer|number 枚举名称。
+--- @param enumName string|number 枚举名称。
 --- @return boolean
 function M.isValidEnumName(enumName)
     -- filter enum_none, enum_max, enum_unknown, enum_invalid from enum
@@ -93,7 +93,7 @@ function M.isValidEnumName(enumName)
 end
 
 --- 将字节标志转换为布尔值（或布尔字符串）。
---- @param flagByte integer|number|string 标志字节（通常 255 表示 true）。
+--- @param flagByte number|string 标志字节（通常 255 表示 true）。
 --- @param isToString boolean|nil 是否返回字符串形式。
 --- @return boolean|string
 function M.flagByteToBool(flagByte, isToString)
@@ -108,7 +108,7 @@ end
 --- 向枚举状态容器追加一个枚举项。
 --- @param enumState EnumState 枚举状态表，需包含 fixedIdToContent/contentToFixedId/fixedId/content 字段。
 --- @param enumName string 枚举名称。
---- @param enumValue integer|number 枚举值。
+--- @param enumValue number 枚举值。
 function M.appendEnumValue(enumState, enumName, enumValue)
     enumState.fixedIdToContent[enumValue] = enumName
     enumState.contentToFixedId[enumName] = enumValue
@@ -206,7 +206,7 @@ function M.CSharpDictEnumerator(dictObj)
 end
 
 --- 基于 Lua 表创建 `Dictionary<int, short>` C# 实例。
---- @param luaTable table<integer, integer>|nil 键值对表。
+--- @param luaTable table<number, number>|nil 键值对表。
 --- @return userdata|nil
 function M.createCSharpDictInt32Int16Instance(luaTable)
     if luaTable == nil then
@@ -267,7 +267,7 @@ function M.CSharpListEnumerator(listObj)
 end
 
 --- 基于 Lua 数组创建 `List<app.OtomonDef.ID_Fixed>` C# 实例。
---- @param luaArray integer[]|nil Lua 数组。
+--- @param luaArray number[]|nil Lua 数组。
 --- @return userdata|nil
 function M.createCSharpListInstance(luaArray)
     if not luaArray then
@@ -314,8 +314,8 @@ function M.executeUserCmd(executeFunc)
 end
 
 --- 收集表中的数值型键。
---- @param sourceTable table<integer|string, unknown>|nil 源表。
---- @return integer[]
+--- @param sourceTable table<number|string, any>|nil 源表。
+--- @return number[]
 function M.collectTableNumberKeys(sourceTable)
     local keys = {}
     if sourceTable == nil then
@@ -332,7 +332,7 @@ end
 
 --- 判断列表中是否包含目标值。
 --- @param list table|nil 列表。
---- @param targetValue unknown 目标值。
+--- @param targetValue any 目标值。
 --- @return boolean
 function M.containsValue(list, targetValue)
     if list == nil then
@@ -347,10 +347,10 @@ function M.containsValue(list, targetValue)
 end
 
 --- 在支持语言列表中选择有效语言，否则回退到默认语言。
---- @param languageIdx integer|string|nil 待检测语言索引。
---- @param supportedLanguageList integer[] 支持的语言索引列表。
---- @param defaultLanguageIdx integer|nil 默认语言索引。
---- @return integer
+--- @param languageIdx number|string|nil 待检测语言索引。
+--- @param supportedLanguageList number[] 支持的语言索引列表。
+--- @param defaultLanguageIdx number|nil 默认语言索引。
+--- @return number
 function M.getSupportedLanguageOrDefault(languageIdx, supportedLanguageList, defaultLanguageIdx)
     local defaultIdx = tonumber(defaultLanguageIdx) or 1
     local lang = tonumber(languageIdx)
@@ -364,10 +364,10 @@ function M.getSupportedLanguageOrDefault(languageIdx, supportedLanguageList, def
 end
 
 --- 按语言索引读取本地化文本，并在缺失时回退到默认语言。
---- @param languageTextMap table<integer, table<string, string>> 文本映射表，形如 languageTextMap[lang][key]。
+--- @param languageTextMap table<number, table<string, string>> 文本映射表，形如 languageTextMap[lang][key]。
 --- @param key string 文本键。
---- @param languageIdx integer|string|nil 当前语言索引。
---- @param defaultLanguageIdx integer|nil 默认语言索引。
+--- @param languageIdx number|string|nil 当前语言索引。
+--- @param defaultLanguageIdx number|nil 默认语言索引。
 --- @param ... string|number `string.format` 参数。
 --- @return string
 function M.getLocalizedText(languageTextMap, key, languageIdx, defaultLanguageIdx, ...)
@@ -396,7 +396,7 @@ end
 
 --- 根据语言索引读取 GUID 对应的游戏内文本。
 --- @param guid string|userdata 文本 GUID。
---- @param languageIdx integer|string|nil 语言索引。
+--- @param languageIdx number|string|nil 语言索引。
 --- @return string
 function M.getGuidTextByLanguage(guid, languageIdx)
     local lang = tonumber(languageIdx)
