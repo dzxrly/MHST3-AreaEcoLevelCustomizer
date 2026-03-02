@@ -10,7 +10,6 @@ end
 local function createState()
     return {
         cUserSaveDataParam = nil,
-        languageIdx = 1, -- default to English
         ecoManager = nil,
         ecoRankFixedEnum = createEnumState(),
         areaFixedIdEnum = createEnumState(),

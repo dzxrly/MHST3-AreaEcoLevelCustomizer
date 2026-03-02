@@ -6,8 +6,8 @@
 --- 13: Chinese (Simplified)
 local coreApi = require("AreaEcoLevelCustomizer.utils")
 
-local M = {
-    languageIdx = 1,
+local M = coreApi.createI18n({
+    defaultLanguageIdx = 1,
     text = {
         [0] = {
             save_data_warning = "使用前に必ずセーブデータをバックアップしてください！！！",
@@ -90,49 +90,6 @@ local M = {
             read_area_eco_info = "读取区域生态信息"
         }
     }
-}
-
-local function getCurrentTextLanguage()
-    return tonumber(M.languageIdx) or 1
-end
-
-local function getCharacterLanguage(cSaveDataHelperOption)
-    if cSaveDataHelperOption == nil then
-        return nil
-    end
-    local textLang = cSaveDataHelperOption:call("getCharacterLanguage()")
-    if textLang ~= nil then
-        return tonumber(textLang)
-    end
-    return nil
-end
-
-function M.initLanguage(cSaveDataHelperOption)
-    local existingLangOpts = coreApi.collectTableNumberKeys(M.text)
-    local inGameLang = getCharacterLanguage(cSaveDataHelperOption)
-
-    if inGameLang == nil then
-        local saveDataManager = sdk.get_managed_singleton("app.SaveDataManager")
-        if saveDataManager ~= nil then
-            local helper = saveDataManager:get_field("_Helper")
-            if helper ~= nil then
-                local optionHelper = helper:get_field("_Option")
-                inGameLang = getCharacterLanguage(optionHelper)
-            end
-        end
-    end
-
-    M.languageIdx = coreApi.getSupportedLanguageOrDefault(inGameLang, existingLangOpts, 1)
-    return M.languageIdx
-end
-
-function M.getUIText(key, ...)
-    return coreApi.getLocalizedText(M.text, key, getCurrentTextLanguage(), 1, ...)
-end
-
-function M.getTextLanguage(guid, cSaveDataHelperOption)
-    local textLang = getCharacterLanguage(cSaveDataHelperOption) or getCurrentTextLanguage()
-    return coreApi.getGuidTextByLanguage(guid, textLang)
-end
+})
 
 return M

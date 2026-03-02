@@ -412,4 +412,71 @@ function M.getGuidTextByLanguage(guid, languageIdx)
     return tostring(guid)
 end
 
+--- 从存档选项对象读取角色语言索引。
+--- @param cSaveDataHelperOption userdata|nil 存档选项对象（支持 getCharacterLanguage()）。
+--- @return number|nil
+function M.getCharacterLanguageFromOption(cSaveDataHelperOption)
+    if cSaveDataHelperOption == nil then
+        return nil
+    end
+    local textLang = cSaveDataHelperOption:call("getCharacterLanguage()")
+    if textLang ~= nil then
+        return tonumber(textLang)
+    end
+    return nil
+end
+
+--- 尝试从 SaveDataManager 读取角色语言索引。
+--- @return number|nil
+function M.getCharacterLanguageFromSaveDataManager()
+    local saveDataManager = sdk.get_managed_singleton("app.SaveDataManager")
+    if saveDataManager == nil then
+        return nil
+    end
+    local helper = saveDataManager:get_field("_Helper")
+    if helper == nil then
+        return nil
+    end
+    local optionHelper = helper:get_field("_Option")
+    return M.getCharacterLanguageFromOption(optionHelper)
+end
+
+--- 创建通用 i18n 上下文。
+--- 返回对象字段：languageIdx/defaultLanguageIdx/text，方法：initLanguage/getUIText/getTextLanguage。
+--- @param config table|nil i18n 配置，支持 defaultLanguageIdx:number 与 text:table<number, table<string, string>>。
+--- @return table
+function M.createI18n(config)
+    local cfg = config or {}
+    local context = {
+        defaultLanguageIdx = tonumber(cfg.defaultLanguageIdx) or 1,
+        languageIdx = tonumber(cfg.defaultLanguageIdx) or 1,
+        text = cfg.text or {}
+    }
+
+    local function getCurrentTextLanguage()
+        return tonumber(context.languageIdx) or context.defaultLanguageIdx
+    end
+
+    function context.initLanguage(cSaveDataHelperOption)
+        local existingLangOpts = M.collectTableNumberKeys(context.text)
+        local inGameLang = M.getCharacterLanguageFromOption(cSaveDataHelperOption)
+        if inGameLang == nil then
+            inGameLang = M.getCharacterLanguageFromSaveDataManager()
+        end
+        context.languageIdx = M.getSupportedLanguageOrDefault(inGameLang, existingLangOpts, context.defaultLanguageIdx)
+        return context.languageIdx
+    end
+
+    function context.getUIText(key, ...)
+        return M.getLocalizedText(context.text, key, getCurrentTextLanguage(), context.defaultLanguageIdx, ...)
+    end
+
+    function context.getTextLanguage(guid, cSaveDataHelperOption)
+        local textLang = M.getCharacterLanguageFromOption(cSaveDataHelperOption) or getCurrentTextLanguage()
+        return M.getGuidTextByLanguage(guid, textLang)
+    end
+
+    return context
+end
+
 return M

@@ -21,7 +21,6 @@ end
 local function otomonFixedIdEnumParser()
     coreApi.parseEnumFields("app.OtomonDef.ID_Fixed", state.otomonFixedIdEnum, true)
 
-    local cSaveDataHelperEgg = getCSaveDataHelper():get_field("_Egg")
     -- filter out invalid otomon from state.otomonFixedIdEnum
     local validOtomonFixedIdEnum = {
         fixedIdToContent = {},
