@@ -15,7 +15,7 @@ FMM_CONFIG = {
     "author": ", ".join(CONTRIBUTORS),
     "screenshot": "src/assets/screenshot.png",
     "category": "Gameplay",
-    "homepage": "https://www.nexusmods.com/#",
+    "homepage": "https://www.nexusmods.com/monsterhunterstories3twistedreflection/mods/4",
 }
 # source file settings
 ORIGIN_LUA_FIEL = "src/area_eco_level_custom.lua"
