@@ -28,7 +28,7 @@ local function getFixedIdKey(fixedId)
 end
 
 local function buildVaryComboLabel(info)
-    return "[" .. tostring(info.otomonFixedId) .. "] " .. info.otomonName .. " - Lv." .. tostring(info.currentLv)
+    return info.otomonName .. " - Lv." .. tostring(info.currentLv)
 end
 
 local function buildSortedRankLowerLimitPtsList(otomonFixedId)
@@ -265,8 +265,7 @@ function M.setComboOtomonFixedAndVaryListByAreaFixedId(areaFixedId)
                 end
             end
             if flag then
-                local displayVal = "[" .. tostring(singleAreaInfo.fixed[i].otomonFixedId) .. "] " ..
-                                       singleAreaInfo.fixed[i].otomonName .. " - Lv." ..
+                local displayVal = singleAreaInfo.fixed[i].otomonName .. " - Lv." ..
                                        tostring(singleAreaInfo.fixed[i].currentLv)
                 table.insert(state.comboFixedOtomon.name, displayVal)
                 table.insert(state.comboFixedOtomon.fixedId, singleAreaInfo.fixed[i].otomonFixedId)
@@ -545,7 +544,8 @@ function M.getAreaInfo()
                     end
                 end
             else
-                coreApi.log("Error: failed to get area save data for area " .. tostring(state.areaFixedIdEnum.content[i]))
+                coreApi.log("Error: failed to get area save data for area " ..
+                                tostring(state.areaFixedIdEnum.content[i]))
             end
         end
 
@@ -575,8 +575,7 @@ function M.getAreaInfo()
                         end
                     end
                     if flag then
-                        table.insert(state.comboAreaNameAndFixedId.name,
-                            "[" .. tostring(areaInfoTemp[i].areaFixedId) .. "] " .. areaInfoTemp[i].areaName)
+                        table.insert(state.comboAreaNameAndFixedId.name, areaInfoTemp[i].areaName)
                         table.insert(state.comboAreaNameAndFixedId.fixedId, areaInfoTemp[i].areaFixedId)
                     end
                 end
