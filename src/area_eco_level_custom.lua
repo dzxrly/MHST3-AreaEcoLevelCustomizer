@@ -12,7 +12,7 @@ coreApi.init("AreaEcoLevelCustomizer")
 local isBtnClicked = false
 
 -- DO NOT CHANGE THE NEXT LINE, ONLY UPDATE THE VERSION NUMBER
-local modVersion = "v1.0.0"
+local modVersion = "v1.0.1"
 -- DO NOT CHANGE THE PREVIOUS LINE
 
 sdk.hook(sdk.find_type_definition("app.SaveDataManager"):get_method("getTitleText()"), function(args)

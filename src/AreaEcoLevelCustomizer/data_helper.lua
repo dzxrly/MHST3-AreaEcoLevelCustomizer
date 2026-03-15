@@ -656,4 +656,8 @@ function M.isOtomomCanGetEggInAnyArea(otomonFixedId)
     return areaList:call("get_Count()") > 0
 end
 
+function M.isEndangerOtomon(otomonFixedId)
+    return state.ecoManager:call("checkEndangeredOt(app.OtomonDef.ID_Fixed)", otomonFixedId)
+end
+
 return M
