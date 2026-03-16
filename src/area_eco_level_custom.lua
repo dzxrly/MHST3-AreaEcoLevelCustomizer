@@ -38,6 +38,7 @@ re.on_draw_ui(function()
                 isBtnClicked = true
             end)
         end
+        imgui.text_colored(i18n.getUIText("click_read_area_eco_info_btn_tips"), config.TIPS_COLOR)
         imgui.new_line()
 
         if state.cUserSaveDataParam ~= nil and not coreApi.isTableEmpty(state.areaInfo) and isBtnClicked then

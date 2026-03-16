@@ -23,7 +23,8 @@ local M = coreApi.createI18n({
             to_rank = "%s まで",
             vary_monsters_max = "変動モンスター: (最大: %s)",
             update_vary_list = "変動リストを更新",
-            read_area_eco_info = "エリア生態情報を読み込む"
+            read_area_eco_info = "エリア生態情報を読み込む",
+            click_read_area_eco_info_btn_tips = "セーブデータをロードしてから読み込んでください！"
         },
         [1] = {
             save_data_warning = "Please BACK UP your save data before use!!!",
@@ -39,7 +40,8 @@ local M = coreApi.createI18n({
             to_rank = "To %s",
             vary_monsters_max = "Vary Monsters: (Max: %s)",
             update_vary_list = "Update Vary List",
-            read_area_eco_info = "Read Area Eco Info"
+            read_area_eco_info = "Read Area Eco Info",
+            click_read_area_eco_info_btn_tips = "Please load save data before reading!"
         },
         [11] = {
             save_data_warning = "사용 전 반드시 세이브 데이터를 백업해 주세요!!!",
@@ -55,7 +57,8 @@ local M = coreApi.createI18n({
             to_rank = "%s까지",
             vary_monsters_max = "변동 몬스터: (최대: %s)",
             update_vary_list = "변동 목록 업데이트",
-            read_area_eco_info = "지역 생태 정보 읽기"
+            read_area_eco_info = "지역 생태 정보 읽기",
+            click_read_area_eco_info_btn_tips = "세이브 데이터를 로드한 후 읽어주세요!"
         },
         [12] = {
             save_data_warning = "使用前請務必備份存檔！！！",
@@ -71,7 +74,8 @@ local M = coreApi.createI18n({
             to_rank = "至 %s",
             vary_monsters_max = "可變魔物： (上限：%s)",
             update_vary_list = "更新可變清單",
-            read_area_eco_info = "讀取區域生態資訊"
+            read_area_eco_info = "讀取區域生態資訊",
+            click_read_area_eco_info_btn_tips = "請進入存檔後再讀取！"
         },
         [13] = {
             save_data_warning = "使用前请务必备份存档！！！",
@@ -87,7 +91,8 @@ local M = coreApi.createI18n({
             to_rank = "到 %s",
             vary_monsters_max = "可变怪物：（上限：%s）",
             update_vary_list = "更新可变列表",
-            read_area_eco_info = "读取区域生态信息"
+            read_area_eco_info = "读取区域生态信息",
+            click_read_area_eco_info_btn_tips = "请进入存档后再读取！"
         }
     }
 })
