@@ -55,7 +55,7 @@ function M.modInit()
     state.stateManager = sdk.get_managed_singleton("app.StageManager")
     state.stageAreaParamTableData = state.stateManager:call("get_AreaParamTableUserData()")
 
-    i18n.initLanguage(state.cSaveDataHelperOption)
+    i18n.initLanguage()
     coreApi.log("Language Index: " .. tostring(i18n.languageIdx))
 
     rankEnumParser()

@@ -412,33 +412,14 @@ function M.getGuidTextByLanguage(guid, languageIdx)
     return tostring(guid)
 end
 
---- 从存档选项对象读取角色语言索引。
---- @param cSaveDataHelperOption userdata|nil 存档选项对象（支持 getCharacterLanguage()）。
+--- 从菜单选项对象读取角色语言索引。
 --- @return number|nil
-function M.getCharacterLanguageFromOption(cSaveDataHelperOption)
-    if cSaveDataHelperOption == nil then
-        return nil
-    end
-    local textLang = cSaveDataHelperOption:call("getCharacterLanguage()")
-    if textLang ~= nil then
-        return tonumber(textLang)
+function M.getCharacterLanguageFromOption()
+    local get_text_language = sdk.find_type_definition("via.gui.GUISystem"):get_method("get_MessageLanguage()")
+    if get_text_language ~= nil then
+        return get_text_language(nil)
     end
     return nil
-end
-
---- 尝试从 SaveDataManager 读取角色语言索引。
---- @return number|nil
-function M.getCharacterLanguageFromSaveDataManager()
-    local saveDataManager = sdk.get_managed_singleton("app.SaveDataManager")
-    if saveDataManager == nil then
-        return nil
-    end
-    local helper = saveDataManager:get_field("_Helper")
-    if helper == nil then
-        return nil
-    end
-    local optionHelper = helper:get_field("_Option")
-    return M.getCharacterLanguageFromOption(optionHelper)
 end
 
 --- 创建通用 i18n 上下文。
@@ -457,12 +438,9 @@ function M.createI18n(config)
         return tonumber(context.languageIdx) or context.defaultLanguageIdx
     end
 
-    function context.initLanguage(cSaveDataHelperOption)
+    function context.initLanguage()
         local existingLangOpts = M.collectTableNumberKeys(context.text)
-        local inGameLang = M.getCharacterLanguageFromOption(cSaveDataHelperOption)
-        if inGameLang == nil then
-            inGameLang = M.getCharacterLanguageFromSaveDataManager()
-        end
+        local inGameLang = M.getCharacterLanguageFromOption()
         context.languageIdx = M.getSupportedLanguageOrDefault(inGameLang, existingLangOpts, context.defaultLanguageIdx)
         return context.languageIdx
     end
@@ -471,8 +449,8 @@ function M.createI18n(config)
         return M.getLocalizedText(context.text, key, getCurrentTextLanguage(), context.defaultLanguageIdx, ...)
     end
 
-    function context.getTextLanguage(guid, cSaveDataHelperOption)
-        local textLang = M.getCharacterLanguageFromOption(cSaveDataHelperOption) or getCurrentTextLanguage()
+    function context.getTextLanguage(guid)
+        local textLang = M.getCharacterLanguageFromOption() or getCurrentTextLanguage()
         return M.getGuidTextByLanguage(guid, textLang)
     end
 
