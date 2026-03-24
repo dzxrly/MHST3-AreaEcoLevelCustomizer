@@ -35,7 +35,10 @@ local function otomonFixedIdEnumParser()
         local fixedIdKey = tostring(fixedId)
 
         if fixedId ~= config.RATH_FIXED_ID and not seenValidFixedId[fixedIdKey] and
-            (dataHelper.isOtomomCanGetEggInAnyArea(fixedId) or dataHelper.isEndangerOtomon(fixedId)) then
+            (dataHelper.isOtomomCanGetEggInAnyArea(fixedId) or
+                dataHelper.isEndangerOtomon(fixedId) or
+                dataHelper.isMutationOtomon(fixedId)
+            ) then
             seenValidFixedId[fixedIdKey] = true
             validOtomonFixedIdEnum.fixedIdToContent[fixedId] = content
             validOtomonFixedIdEnum.contentToFixedId[content] = fixedId

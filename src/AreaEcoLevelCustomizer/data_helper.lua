@@ -660,4 +660,8 @@ function M.isEndangerOtomon(otomonFixedId)
     return state.ecoManager:call("checkEndangeredOt(app.OtomonDef.ID_Fixed)", otomonFixedId)
 end
 
+function M.isMutationOtomon(otomonFixedId)
+    return state.ecoManager:call("IsMutationID(app.OtomonDef.ID_Fixed)", otomonFixedId)
+end
+
 return M
